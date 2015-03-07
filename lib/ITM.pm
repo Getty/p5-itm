@@ -65,7 +65,7 @@ sub itm_parse {
 
 sub _itm_parse {
   my ( $header, $payload ) = @_;
-  if (length($payload) != $header->{size}) {
+  if ((defined $payload ? length($payload) : 0) != $header->{size}) {
     croak(__PACKAGE__."::itm_parse given payload doesn't fit required size");
   }
   delete $header->{size};
