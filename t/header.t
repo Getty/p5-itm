@@ -19,7 +19,7 @@ my @tests = (
 
 while (@tests) {
   my $testname = shift @tests;
-  my $byte = pack('b8',shift @tests);
+  my $byte = pack('b8',join("",reverse(split("",shift @tests))));
   my $expected = shift @tests;
   my $header = itm_header($byte);
   is_deeply($header,$expected,$testname);

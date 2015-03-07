@@ -20,7 +20,7 @@ my @tests = (
 
 while (@tests) {
   my $testname = shift @tests;
-  my $header = pack('b8',shift @tests);
+  my $header = pack('b8',join("",reverse(split("",shift @tests))));
   my $expected = shift @tests;
   my $class = delete $expected->{class};
   my $payload = delete $expected->{payload};

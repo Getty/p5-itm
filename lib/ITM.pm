@@ -1,5 +1,5 @@
 package ITM;
-# ABSTRACT: Debug ITM/SWD stream deserializer
+# ABSTRACT: ITM/SWD deserializer
 
 use strict;
 use warnings;
@@ -38,8 +38,8 @@ sub itm_size {
 
 sub itm_header {
   my ( $byte ) = @_;
-  my $bits = unpack('b8',$byte);
-  my @b = reverse(split(//,$bits));
+  my @b = split(//,unpack('b8',$byte));
+  my $bits = join('',reverse(@b));
   if ($bits eq '00000000' || $bits eq '10000000') {
     return { type => ITM_SYNC, size => 0 };
   } elsif ($b[0] == 0 && $b[1] == 0) { # Not Instrument / Hardware Source
@@ -66,7 +66,7 @@ sub itm_parse {
 sub _itm_parse {
   my ( $header, $payload ) = @_;
   if (length($payload) != $header->{size}) {
-    croak(__PACKAGE__."::itm_parse given payload doesn't size required size");
+    croak(__PACKAGE__."::itm_parse given payload doesn't fit required size");
   }
   delete $header->{size};
   if ( $header->{type} == ITM_SYNC ) {
@@ -83,6 +83,15 @@ sub _itm_parse {
 1;
 
 =head1 SYNOPSIS
+
+  my $header = itm_header(substr($buf,0,1));
+  if ($header) {
+    my $size = $header->{size} ? $header->{size} : 0;
+    my $itm = itm_parse(substr($buf,0,$size+1));
+    # do something with $itm
+  } else {
+    print "Unknown ITM packet";
+  }
 
 =head1 DESCRIPTION
 
