@@ -5,6 +5,11 @@ use Test::More;
 
 for (qw(
   ITM
+  ITM::HardwareSource
+  ITM::Role
+  ITM::Overflow
+  ITM::Instrumentation
+  ITM::Sync
 )) {
   use_ok($_);
 }
