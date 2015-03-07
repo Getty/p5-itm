@@ -54,10 +54,10 @@ sub itm_header {
 
 sub itm_parse {
   my ( @args ) = @_;
-  if (scalar @args == 1) {
+  if (!ref $args[0]) {
     my ( $header_byte, @data ) = split(//,$args[0]);
     return _itm_parse(itm_header($header_byte), join("",@data));
-  } elsif (scalar @args == 2) {
+  } else {
     return _itm_parse(@args);
   }
   croak(__PACKAGE__."::itm_parse Unknown parameter count");
