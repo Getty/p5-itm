@@ -5,3 +5,6 @@ Revision history for ITM
       ITM::HardwareSource returns the type constant instead of dying with
       "Undefined subroutine"; the constants now exist before the packet
       classes are loaded
+    - itm_parse croaks on an empty input, naming the missing header byte,
+      instead of returning an ITM::Overflow packet with uninitialized-value
+      warnings

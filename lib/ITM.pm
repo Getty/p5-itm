@@ -57,6 +57,8 @@ sub itm_header {
 sub itm_parse {
   my ( @args ) = @_;
   if (!ref $args[0]) {
+    croak(__PACKAGE__."::itm_parse needs at least the header byte, got an empty input")
+      unless defined $args[0] && length $args[0];
     my ( $header_byte, @data ) = split(//,$args[0]);
     return _itm_parse(itm_header($header_byte), join("",@data));
   } else {
