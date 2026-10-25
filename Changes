@@ -16,3 +16,5 @@ Revision history for ITM
     - The distribution builds: add LICENSE, README.md and Changes; the
       cpanfile names the modules the code loads (Carp, Exporter, Moo) and
       drops the zero version pin
+    - Add a GitHub Actions workflow that builds and tests the distribution,
+      author tests included, on every push and pull request
