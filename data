@@ -1,0 +1,24 @@
+---
+claimed_at: 2026-10-25T05:38:35Z
+claimed_by: itm-worker
+class: standard
+completed: 2026-10-25T05:38:35Z
+created: 2026-10-21T02:24:55Z
+id: 6
+priority: low
+started: 2026-10-25T05:29:27Z
+status: done
+tags:
+- ci
+- tests
+title: 'Keine CI und keine Autorentests: die Suite laeuft nur lokal'
+updated: 2026-10-25T05:38:35Z
+---
+
+Die Dist hat kein CI und kein xt-Verzeichnis: die vier Testdateien unter t/ laufen nur auf der Hand des Entwicklers. Es gibt keine Autorentests (kein perlcritic, keine POD-Abdeckung, keine Changes-Pruefung), also faellt zur Laufzeit auch nichts auf, was die Hausregeln verletzt - die Dateien unter lib/ haben zum Beispiel kein eigenes Versionsstatement und kein strict/warnings.
+
+Ziel: eine CI-Konfiguration, die die Suite und die Autorentests bei jedem Push laufen laesst. Die Pipeline baut und testet, sie released nicht und pusht nichts - der Release bleibt beim Maintainer. Als Vorlage dienen die anderen Dists der Flotte; die Flotten-Uebersicht steht im Hub unter bin/fleet.
+
+Falls ein Autorentest neu hinzukommt, braucht er die passenden Test-Abhaengigkeiten unter on develop in der cpanfile.
+
+Commit 7b4fcc4. ci.yml nach Vorlage Airlock (dzil-test Composite-Action, Perl 5.36-5.40, kein Release/Push). Entscheidung: kein eigenes xt/ angelegt - das Bundle erzeugt pod-syntax und changes_has_content beim Build selbst, die Action installiert develop-Deps mit --author; deshalb keine neuen cpanfile-develop-Eintraege.
