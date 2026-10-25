@@ -1,0 +1,32 @@
+---
+claimed_at: 2026-10-25T05:38:08Z
+claimed_by: itm-worker
+class: standard
+completed: 2026-10-25T05:38:08Z
+created: 2026-10-21T02:23:48Z
+id: 1
+priority: high
+started: 2026-10-25T05:29:02Z
+status: done
+tags:
+- bug
+- api
+title: type-Methode stirbt auf allen vier Paketklassen
+updated: 2026-10-25T05:38:08Z
+---
+
+Alle vier Paketklassen implementieren ihre type-Methode als Aufruf der Konstante als Funktion, z.B. sub type { ITM_SYNC() } in lib/ITM/Sync.pm Zeile 8. ITM.pm laedt aber use ITM::Sync (Zeile 11) vor der Definition der Konstanten (Zeilen 16-22); der zirkulaere use ITM innerhalb der Klasse importiert deshalb nichts, und die Konstante existiert im Klassenpaket nie.
+
+Beleg:
+  perl -Ilib -Mstrict -Mwarnings -e 'use ITM; my $i = itm_parse(chr(0)); print ref($i), " type=", $i->type, "\n";'
+  -> Undefined subroutine &ITM::Sync::ITM_SYNC called at lib/ITM/Sync.pm line 8.
+
+Betroffen: ITM::Sync, ITM::Overflow, ITM::Instrumentation, ITM::HardwareSource.
+
+Ziel: type liefert die Konstantennummer, ohne dass die Reihenfolge von use und Definition eine Rolle spielt. Der Reihenfolge- oder Aufruf-Problem darf nicht durch Aufrufer-seitiges Herumschlucken (z.B. eval) geloest werden - die Konstante muss in dem Paket verfuegbar sein, in dem sie benutzt wird.
+
+Test: eine Regressionspruefung, die ->type auf allen vier Klassen aufruft und die Konstantennummer erwartet. Der Test muss vor der Fixierung rot sein.
+
+Changes-Eintrag noetig, weil sich das beobachtbare Verhalten einer veroeffentlichten Methode aendert.
+
+Commit 9fb8688. Konstanten und @EXPORT stehen jetzt vor den use ITM::*-Zeilen (BEGIN). t/type.t war vorher rot (Undefined subroutine). Also found: Croak-Praefix 'ITM::itm_parse' doppelt; Zweig 'Unknown parameter count' unerreichbar; itm_size liefert undef bei 0/0; ITM_TIMESTAMP/EXTENSION/RESERVED werden nie erzeugt; ITM.pm POD DESCRIPTION leer. Nicht behoben.
