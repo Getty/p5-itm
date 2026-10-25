@@ -1,0 +1,32 @@
+---
+claimed_at: 2026-10-25T05:38:13Z
+claimed_by: itm-worker
+class: standard
+completed: 2026-10-25T05:38:13Z
+created: 2026-10-21T02:23:54Z
+id: 2
+priority: high
+started: 2026-10-25T05:29:08Z
+status: done
+tags:
+- bug
+- input-validation
+title: Leere Eingabe wird still zu einem Overflow-Paket
+updated: 2026-10-25T05:38:13Z
+---
+
+itm_parse("") liefert ein ITM::Overflow-Objekt statt eines Fehlers. Der leere String splittet in kein Header-Byte; itm_header() in lib/ITM.pm Zeile 41 warnt dreimal wegen uninitialisierter Werte und faellt in den Overflow-Zweig durch.
+
+Beleg:
+  perl -Ilib -Mstrict -Mwarnings -e 'use ITM; my $i = itm_parse(""); print ref($i), "\n";'
+  -> Use of uninitialized value $byte in unpack at lib/ITM.pm line 41.
+  -> Use of uninitialized value $b[0] in numeric eq (==) at lib/ITM.pm line 45.
+  -> Use of uninitialized value $b[1] in numeric eq (==) at lib/ITM.pm line 45.
+
+Ziel: eine leere Eingabe ist kein gueltiges Paket und wird mit einem klaren Fehler abgewiesen (croak), ohne Warnungen. Der Fehler muss nennen, was fehlt - nicht nur, dass etwas fehlt.
+
+Der Weg ueber ITM::Overflow war bisher nicht dokumentiert und wird nirgends beschrieben - falls jemand darauf baut, ist das im Release-Manager-Board zu notieren.
+
+Test: ein Test, der itm_parse("") aufruft und den Fehler erwartet, plus ein Test, der sicherstellt, dass keine Warnung entsteht.
+
+Commit b4a6842. itm_parse('') und undef croaken 'needs at least the header byte, got an empty input'. t/empty.t vorher rot (Overflow-Objekt plus Warnung). Der bisherige Overflow-Weg war undokumentiert; fuer das Release-Manager-Board: Verhaltensaenderung steht in Changes.
