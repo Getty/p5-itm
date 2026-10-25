@@ -3,6 +3,9 @@ use strict;
 use warnings;
 use Test::More;
 
+# Checks the source as written; the built dist carries generated POD.
+plan skip_all => 'source tree only' unless -e '.git';
+
 my @modules = qw(
   ITM
   ITM::Role
