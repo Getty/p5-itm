@@ -1,0 +1,28 @@
+---
+claimed_at: 2026-10-25T05:38:29Z
+claimed_by: itm-worker
+class: standard
+completed: 2026-10-25T05:38:29Z
+created: 2026-10-21T02:24:34Z
+id: 5
+priority: medium
+started: 2026-10-25T05:29:22Z
+status: done
+tags:
+- dist
+- release
+title: 'dzil build bricht ab: keine LICENSE, kein Changes, kein README'
+updated: 2026-10-25T05:38:29Z
+---
+
+Die Dist baut nicht. Es fehlen die drei Dateien, die das Release-Bundle und das Hausformat erwarten:
+
+  LICENSE   - fehlt vollstaendig. Das Bundle bricht den Build mit 'no LICENSE in the distribution' ab. Erzeugen mit dzil genlicense und danach die Datei ausdruecklich in die Versionskontrolle aufnehmen - das ist nicht optional, das Bundle sammelt nur getrackte Dateien.
+  Changes   - fehlt vollstaendig. Es braucht eine Sektion mit dem NEXT-Platzhalter fuer die noch nicht veroeffentlichten Aenderungen.
+  README.md - fehlt. Das Bundle schliesst die Datei per Vorgabe aus dem Tarball aus, sie gehoeren trotzdem ins Repo.
+
+Der cpanfile ist ebenfalls nicht hauskonform: requires 'Moo', '0' pinnt nichts (Hausregel: nie '0'), und die benutzten Kernmodule Carp, Exporter und List::Util sind nicht deklariert. List::Util wird nur fuer ein sum importiert, das nirgends benutzt wird - entweder nutzen oder den Import entfernen, dann das verbleibende deklarieren. Die cpanfile-Eintraege stehen alphabetisch, die Version nur dort, wo sie wirklich gebraucht wird.
+
+Ziel: dzil build laeuft sauber durch, das cpanfile nennt genau die Abhaengigkeiten, die der Code wirklich laedt. Kein Release, kein Push, kein Tag - das ist eine Release-Audit-Karte, kein Release-Auftrag.
+
+Commit 3faa773. LICENSE (dzil genlicense, getrackt), Changes, README.md, cpanfile (Carp, Exporter, Moo; Test::More 0.96 on test). dzil build laeuft sauber (in mktemp-Verzeichnis geprueft).
