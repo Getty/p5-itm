@@ -8,11 +8,6 @@ use Carp qw( croak );
 use Exporter 'import';
 use List::Util qw( sum );
 
-use ITM::Sync;
-use ITM::Overflow;
-use ITM::Instrumentation;
-use ITM::HardwareSource;
-
 sub ITM_SYNC            { 1 }
 sub ITM_OVERFLOW        { 2 }
 sub ITM_TIMESTAMP       { 3 }
@@ -21,13 +16,20 @@ sub ITM_RESERVED        { 5 }
 sub ITM_INSTRUMENTATION { 6 }
 sub ITM_HARDWARE_SOURCE { 7 }
 
-our @EXPORT = qw(
+# the packet classes import the constants from here, so they must exist
+# before those classes are loaded
+our @EXPORT;
+BEGIN {
+  @EXPORT = qw(
+    ITM_SYNC ITM_OVERFLOW ITM_TIMESTAMP ITM_EXTENSION ITM_RESERVED ITM_INSTRUMENTATION ITM_HARDWARE_SOURCE
+    itm_header itm_parse
+  );
+}
 
-  ITM_SYNC ITM_OVERFLOW ITM_TIMESTAMP ITM_EXTENSION ITM_RESERVED ITM_INSTRUMENTATION ITM_HARDWARE_SOURCE
-
-  itm_header itm_parse
-
-);
+use ITM::Sync;
+use ITM::Overflow;
+use ITM::Instrumentation;
+use ITM::HardwareSource;
 
 sub itm_size {
   my ( $b0, $b1 ) = @_;

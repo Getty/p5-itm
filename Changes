@@ -1,0 +1,7 @@
+Revision history for ITM
+
+{{$NEXT}}
+    - The type method of ITM::Sync, ITM::Overflow, ITM::Instrumentation and
+      ITM::HardwareSource returns the type constant instead of dying with
+      "Undefined subroutine"; the constants now exist before the packet
+      classes are loaded
