@@ -8,3 +8,5 @@ Revision history for ITM
     - itm_parse croaks on an empty input, naming the missing header byte,
       instead of returning an ITM::Overflow packet with uninitialized-value
       warnings
+    - itm_parse called with a header hashref and a payload leaves the
+      caller's header untouched; it used to remove the size key

@@ -68,11 +68,13 @@ sub itm_parse {
 }
 
 sub _itm_parse {
-  my ( $header, $payload ) = @_;
-  if ((defined $payload ? length($payload) : 0) != $header->{size}) {
+  my ( $given, $payload ) = @_;
+  if ((defined $payload ? length($payload) : 0) != $given->{size}) {
     croak(__PACKAGE__."::itm_parse given payload doesn't fit required size");
   }
-  delete $header->{size};
+  my %fields = %{$given};
+  delete $fields{size};
+  my $header = \%fields;
   if ( $header->{type} == ITM_SYNC ) {
     return ITM::Sync->new( %{$header} );
   } elsif ( $header->{type} == ITM_OVERFLOW ) {
