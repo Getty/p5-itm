@@ -6,7 +6,8 @@ use warnings;
 use bytes;
 use Carp qw( croak );
 use Exporter 'import';
-use List::Util qw( sum );
+
+our $VERSION = '0.002';
 
 sub ITM_SYNC            { 1 }
 sub ITM_OVERFLOW        { 2 }
@@ -100,18 +101,3 @@ sub _itm_parse {
   }
 
 =head1 DESCRIPTION
-
-=head1 SUPPORT
-
-IRC
-
-  Join #hardware on irc.perl.org. Highlight Getty for fast reaction :).
-
-Repository
-
-  http://github.com/Getty/p5-itm
-  Pull request and additional contributors are welcome
- 
-Issue Tracker
-
-  http://github.com/Getty/p5-itm/issues

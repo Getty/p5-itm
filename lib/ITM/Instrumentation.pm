@@ -1,7 +1,12 @@
 package ITM::Instrumentation;
+# ABSTRACT: ITM software instrumentation packet
 
+use strict;
+use warnings;
 use Moo;
 use ITM;
+
+our $VERSION = '0.002';
 
 with qw( ITM::Role );
 
@@ -17,18 +22,3 @@ has source => (
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
-
-=head1 SUPPORT
-
-IRC
-
-  Join #hardware on irc.perl.org. Highlight Getty for fast reaction :).
-
-Repository
-
-  http://github.com/Getty/p5-itm
-  Pull request and additional contributors are welcome
- 
-Issue Tracker
-
-  http://github.com/Getty/p5-itm/issues
