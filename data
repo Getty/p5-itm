@@ -1,0 +1,31 @@
+---
+claimed_at: 2026-10-25T05:38:19Z
+claimed_by: itm-worker
+class: standard
+completed: 2026-10-25T05:38:19Z
+created: 2026-10-21T02:23:59Z
+id: 3
+priority: medium
+started: 2026-10-25T05:29:13Z
+status: done
+tags:
+- bug
+- api
+title: itm_parse mit Header und Payload zerstoert den Header des Aufrufers
+updated: 2026-10-25T05:38:19Z
+---
+
+Die Form itm_parse($header, $payload) nimmt den Hash des Aufrufers an und veraendert ihn: _itm_parse() in lib/ITM.pm Zeile 71 macht delete $header->{size}. Nach dem Aufruf fehlt im Header des Aufrufers der Schluessel size.
+
+Beleg:
+  my $h = itm_header(chr(1));          # size=1,source=0,type=6
+  itm_parse($h, chr(42));              # Aufruf ok, Payload korrekt
+  # $h enthaelt danach nur noch source=0,type=6
+
+Ziel: die zweite Aufrufform veraendert die uebergebene Datenstruktur nicht. Entweder arbeitet _itm_parse auf einer Kopie, oder das size wird nicht entfernt, sondern nur nicht weitergegeben. Der Aufrufer darf nach dem Aufruf weiterhin auf sein Header-Objekt zugreifen koennen.
+
+Das ist ein API-Vertrag: wer den Header behalten will, um ihn weiterzuverwenden (z.B. fuer mehrere Payloads desselben Typs), verliert heute still ein Feld.
+
+Test: ein Test, der den Header vor und nach dem Aufruf vergleicht und die Unveraendertheit feststellt. Der Test muss vor der Fixierung rot sein.
+
+Commit 7f74e74. _itm_parse arbeitet auf flacher Kopie. t/caller_header.t vorher rot (size fehlte).
