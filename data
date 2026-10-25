@@ -1,0 +1,32 @@
+---
+claimed_at: 2026-10-25T05:38:24Z
+claimed_by: itm-worker
+class: standard
+completed: 2026-10-25T05:38:24Z
+created: 2026-10-21T02:24:13Z
+id: 4
+priority: medium
+started: 2026-10-25T05:29:17Z
+status: done
+tags:
+- packaging
+- conventions
+title: Kein Modul traegt eine eigene Version, fuenf ohne strict und ABSTRACT
+updated: 2026-10-25T05:38:24Z
+---
+
+Alle sechs Module unter lib/ sind versionlos: in keinem steht ein eigenes our $VERSION. Ohne eigene $VERSION liefert die Dist versionlose Dateien aus, und Verbraucher, die auf die Version pinnen, koennen nichts festnageln.
+
+Weiter fehlt in fuenf von sechs Modulen die Hauskonvention: use strict; use warnings; und ein ABSTRACT-Kommentar direkt unter package. Nur lib/ITM.pm hat beides.
+
+Betroffen:
+  lib/ITM/Role.pm, lib/ITM/Sync.pm, lib/ITM/Overflow.pm, lib/ITM/Instrumentation.pm, lib/ITM/HardwareSource.pm - kein strict/warnings, kein ABSTRACT
+  alle sechs Module - kein eigenes our $VERSION
+
+Ziel: jede Datei unter lib/ traegt ihr eigenes our $VERSION mit der naechsten, noch nicht veroeffentlichten Version; in allen Dateien stehen use strict; use warnings; und ein ABSTRACT-Kommentar als erste Zeile nach package.
+
+Zusaetzlich: alle sechs Module tragen einen handgeschriebenen SUPPORT-Abschnitt (IRC, Repository, Issue Tracker). Das Release-Bundle erzeugt diesen Abschnitt selbst - ein handgeschriebener Abschnitt kollidiert damit und muss entfernt werden. Der Inhalt des Blocks geht in die Bundle-Option irc und in die Repository-Angaben in dist.ini.
+
+Keine Versionsaussage in dieser Karte: die Version setzt der Release-Lauf, der Worker nimmt die aktuelle Hausversion aus der sibling-Dist.
+
+Commit 408193e. Version 0.002 = Hausversion der Sibling-Dist (Airlock), letzte Release 0.001. SUPPORT entfernt; dist.ini irc = #hardware; Repo-Links erzeugt das Bundle aus dem Remote. List::Util-Import (sum) hier mitentfernt, gleiche Datei. t/version.t vorher rot (kein VERSION auf main).
