@@ -13,3 +13,6 @@ Revision history for ITM
     - Every module carries its own version, enables strict and warnings and
       has an abstract; the hand-written SUPPORT sections are gone, the
       release generates them (IRC channel #hardware)
+    - The distribution builds: add LICENSE, README.md and Changes; the
+      cpanfile names the modules the code loads (Carp, Exporter, Moo) and
+      drops the zero version pin
