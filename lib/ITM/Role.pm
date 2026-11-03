@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Moo::Role;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 requires qw( type );
 

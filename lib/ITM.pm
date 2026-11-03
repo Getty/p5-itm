@@ -7,7 +7,7 @@ use bytes;
 use Carp qw( croak );
 use Exporter 'import';
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 sub ITM_SYNC            { 1 }
 sub ITM_OVERFLOW        { 2 }

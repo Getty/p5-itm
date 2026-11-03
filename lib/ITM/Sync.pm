@@ -6,7 +6,7 @@ use warnings;
 use Moo;
 use ITM;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 with qw( ITM::Role );
 
