@@ -29,9 +29,11 @@ returns a packet object.
 prove -lr t/
 ```
 
-Four files: `header.t` (header decoding), `load.t` (the modules load), `parse.t`
-(the packets become the right class), `simple.t` (the three basic packets). There is
-no `xt/` — no perlcritic, no pod coverage.
+`t/` holds `header.t` (header decoding), `load.t` (the modules load), `parse.t` (the
+packets become the right class), `simple.t` (the three basic packets), `type.t` (`->type`
+of every packet class), `empty.t` (the empty input croaks), `caller_header.t` (the
+caller's header hashref stays intact) and `version.t` (every module carries its
+version). There is no `xt/` — no perlcritic, no pod coverage.
 
 ## Code Style
 
@@ -63,13 +65,14 @@ contract, the vocabulary and the known rough edges.
 
 ## State of the code
 
-- The suite is green — `prove -lr t/` runs four files — but it calls neither `->type`
-  nor the error paths.
-- `->type` dies on **all four** packet classes: the classes call the constants as
-  functions, but `ITM.pm` loads them before the constants exist.
-- `itm_parse("")` returns an overflow packet instead of failing, with three
-  uninitialized-value warnings.
-- `itm_parse($header, $payload)` deletes `size` from the caller's header hashref.
-- No module carries `our $VERSION`; five lack `use strict; use warnings;` and
-  `# ABSTRACT:`; all six carry a hand-written SUPPORT block.
-- There is no `Changes`, no `LICENSE` (so `dzil build` aborts), no `README.md`, no CI.
+- `->type` returns the type constant on all four packet classes; `ITM.pm` defines the
+  constants before it loads the classes.
+- `itm_parse("")` croaks and names the missing header byte.
+- `itm_parse($header, $payload)` leaves the caller's header hashref untouched.
+- Every module carries `our $VERSION`, `use strict; use warnings;` and `# ABSTRACT:`;
+  the SUPPORT section comes from the release bundle.
+- The repo carries `Changes`, `LICENSE`, `README.md` and a GitHub Actions workflow
+  (`.github/workflows/ci.yml`) that builds and tests with the bundle's `dzil-test`
+  action on Perl 5.36, 5.38 and 5.40.
+- `ITM_TIMESTAMP`, `ITM_EXTENSION` and `ITM_RESERVED` are exported; the decoder does
+  not produce them yet.

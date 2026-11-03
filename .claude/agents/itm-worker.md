@@ -73,8 +73,7 @@ packet, the attributes it carries, or the header hashref, you break every caller
 prove -lr t/
 ```
 
-The suite is small, and the things it does not cover are exactly the rough edges
-listed in skill `itm-core` — a green suite here is not a proof. When you fix a defect,
-leave a regression test that fails before the fix; the existing tests call neither
-`->type` nor the error paths, so a fix without a new test changes nothing that is
-checked.
+`t/` pins the header decoding, the parse forms, `->type` of every packet class, the
+empty-input croak, the caller's header hashref and the module versions. The error
+path of a mismatching payload length and the open items in skill `itm-core` are not
+pinned yet. When you fix a defect, leave a regression test that fails before the fix.

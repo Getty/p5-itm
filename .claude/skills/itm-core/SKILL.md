@@ -90,48 +90,25 @@ port.
 
 ## Rough edges
 
-Real, in the tree, and not fixed:
+Real, in the tree:
 
-1. **`->type` dies on every packet class.** The classes call the constants as
-   functions — `sub type { ITM_SYNC() }` — but `ITM.pm` loads `ITM::Sync` *before* it
-   defines the constants, and the circular `use ITM` inside the class therefore
-   imports nothing. Every call dies with
-   `Undefined subroutine &ITM::Sync::ITM_SYNC called at lib/ITM/Sync.pm line 8`.
-   Affects `ITM::Sync`, `ITM::Overflow`, `ITM::Instrumentation` and
-   `ITM::HardwareSource` alike.
-2. **`itm_parse("")` returns an overflow packet instead of failing.** The empty
-   string splits into no header byte; `itm_header` warns three times about
-   uninitialized values and falls through to the overflow branch. An empty input is
-   not a valid packet and must not silently become one.
-3. **`itm_parse($header, $payload)` destroys the caller's header.** `_itm_parse` does
-   `delete $header->{size}` on the hashref it was handed, so the caller's hash loses
-   its `size` key after the call.
-4. **The croak `Unknown parameter count` is unreachable** — both branches of
+1. **The croak `Unknown parameter count` is unreachable** — both branches of
    `itm_parse` return before it.
-5. **No module carries `our $VERSION`** — none of the six. They ship versionless.
-6. **Five modules lack `use strict; use warnings;` and `# ABSTRACT:`** — only
-   `ITM.pm` has them.
-7. **All six modules carry a hand-written `=head1 SUPPORT` block** — the release
-   bundle generates that section, and a hand-written one collides with it.
-8. **`ITM_TIMESTAMP`, `ITM_EXTENSION` and `ITM_RESERVED` are unreachable** — see
-   above.
-9. **`itm_size` returns `undef`** for the combination b0 = 0 and b1 = 0. `itm_header`
+2. **`ITM_TIMESTAMP`, `ITM_EXTENSION` and `ITM_RESERVED` are unreachable** — they are
+   exported, `itm_header` never returns them and `_itm_parse` has no branch for them.
+3. **`itm_size` returns `undef`** for the combination b0 = 0 and b1 = 0. `itm_header`
    never reaches that combination, but the sub is public and undocumented.
-10. **The croak messages carry a doubled package prefix** — `__PACKAGE__` inside
-    package `ITM` yields `ITM::itm_parse …`.
-11. **The cpanfile pins `'0'`** and declares neither `Carp`/`Exporter` nor
-    `List::Util`; `List::Util` is imported for a `sum` that is never called.
-12. **No `Changes`, no `LICENSE`, no `README.md`.** `dzil build` aborts on the
-    missing `LICENSE`.
-13. **There is no CI** and no `xt/` — no perlcritic, no pod coverage, no `Changes`
-    test.
+4. **The croak messages carry a doubled package prefix** — `__PACKAGE__` inside
+   package `ITM` yields `ITM::itm_parse …`.
+5. **No `xt/`** — no perlcritic, no pod coverage.
 
 ## Tests
 
-`t/` holds four files: `t/header.t` (nine header decodings), `t/load.t` (the six
-modules load), `t/parse.t` (nine packets become the right class with the right
-payload), `t/simple.t` (the three basic packets). `prove -lr t/` runs the suite.
+`prove -lr t/` runs the suite: `t/header.t` (header decodings), `t/load.t` (the
+modules load), `t/parse.t` (packets become the right class with the right payload),
+`t/simple.t` (the three basic packets), `t/type.t` (`->type` of every packet class),
+`t/empty.t` (the empty input croaks), `t/caller_header.t` (the caller's header hashref
+stays intact), `t/version.t` (every module carries its version).
 
-No test calls `->type`, and no test touches the error paths — that is why the broken
-`type` survives a green suite. A fix for any of the rough edges needs a test that
-fails before it.
+A change to the contract, or a fix for any rough edge, comes with a test that fails
+before it.
