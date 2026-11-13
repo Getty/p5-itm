@@ -47,7 +47,7 @@ force-loaded into the agents below. Do not restate them here.
 ## Delegation
 
 Delegate behavior-relevant code to the right agent instead of touching it yourself —
-principle in the shared rule `getty-agent-delegation` (skilletor bundle
+principle in the shared rule `agent-delegation` (skilletor bundle
 `getty-cpan-dist@getty`), lanes and hazards in `.claude/rules/itm-rules.md`.
 
 | Task | Agent |
